@@ -3,16 +3,11 @@ import React from "react";
 import LoginForm from "./components/LoginForm.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 
-console.log(LoginForm);
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(null);
 
-  console.log("TOKEN:", localStorage.getItem("token"));
-  console.log("isLoggedIn BEFORE:", isLoggedIn);
-
-
   React.useEffect(() => {
-    console.log("Running auth check");
     const token = localStorage.getItem("token");
 
     if (!token || token === "undefined" || token === "null") {

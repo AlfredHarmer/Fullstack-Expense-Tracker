@@ -23,7 +23,7 @@ function Dashboard({ setIsLoggedIn }) {
       console.error("Missing Fields");
       return;
     } 
-    // Get token from browers so request can authenticated 
+    // Get token from browers so request can authenticate
     const token = localStorage.getItem("token");
 
     try {
