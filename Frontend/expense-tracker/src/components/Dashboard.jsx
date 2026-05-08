@@ -32,7 +32,7 @@ function Dashboard({ setIsLoggedIn }) {
         setDescription("");
         setDate("");
 
-        fetchExpenses();
+        handleFetchExpenses();
       }
 
   };
@@ -40,10 +40,10 @@ function Dashboard({ setIsLoggedIn }) {
   // Delete Expense
   const handleDelete = async (id) => {
 
-    const respons = await deleteExpense(id);
+    const response = await deleteExpense(id);
 
     if (response.ok) {
-      fetchExpenses(); // Refresh List
+      handleFetchExpenses(); // Refresh List
     } else {
       console.error("Failed to delete");
     }
@@ -60,20 +60,15 @@ function Dashboard({ setIsLoggedIn }) {
   };
 
   // Update Expense
-  const handleUpdate = async (id, date) => {
+  const handleUpdate = async (id, data) => {
   
     const expense = expenses.find(e => e.id === id);
 
-    const response = await updateExpense(id, {
-      category: expenseCategory,
-      amount,
-      description,
-      date
-    });
+    const response = await updateExpense(id, expense);
 
       if (response.ok) {
         setEditingId(null);
-        fetchExpenses();
+        handleFetchExpenses();
       }
   };
 
@@ -83,9 +78,11 @@ function Dashboard({ setIsLoggedIn }) {
 
   
   // Fetches Users Expenses 
-  const fetchExpenses = async () => {
+  const handleFetchExpenses = async () => {
 
-    const respons = await fetchExpenses();
+    const response = await fetchExpenses();
+
+    const data = await response.json();
 
       if (response.ok) {        
         setExpenses(data);
@@ -102,7 +99,7 @@ function Dashboard({ setIsLoggedIn }) {
 
   React.useEffect(() => {
     console.log("Calling fetchExpenses");
-    fetchExpenses();
+    handleFetchExpenses();
   }, []);
 
   return (

@@ -29,7 +29,7 @@ export const addExpense = async (data) => {
                 Authorization: `Bearer ${token}`
             }, 
             body: JSON.stringify({
-                catergory: data.catergory,
+                category: data.category,
                 amount: Number(data.amount),
                 description: data.description,
                 date: data.date || new Date().toISOString().split("T")[0]
@@ -73,10 +73,10 @@ export const updateExpense = async (id, data) => {
                 Authorization: `Bearer ${token}`
             }, 
             body: JSON.stringify({
-                catergory: data.expense.catergory, 
-                amount: data.expense.amount,
-                description: data.expense.description,
-                date: data.expense.date
+                category: data.category, 
+                amount: data.amount,
+                description: data.description,
+                date: data.date
             })
         });
 
