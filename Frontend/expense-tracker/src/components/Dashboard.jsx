@@ -1,7 +1,8 @@
 import React from "react";
+import { fetchExpenses, addExpense, deleteExpense, updateExpense } from "../services/expenseService";
 
 function Dashboard({ setIsLoggedIn }) {
-  const [expenseName, setExpenseName] = React.useState("");
+  const [expenseCategory, setExpenseCategory] = React.useState("");
   const [amount, setAmount] = React.useState("");
   const [expenses, setExpenses] = React.useState([]);
   const [editingId, setEditingId] = React.useState(null);
@@ -12,37 +13,21 @@ function Dashboard({ setIsLoggedIn }) {
   // Add New Expense
   const handleAddExpense = async () => {
 
-    console.log("Sending:", {
-      category: expenseName,
-      amount: Number(amount),
-      description: description,
-      date: date || new Date().toISOString()
-    });
     // Input Validation 
-    if (!expenseName || !amount) {
+    if (!expenseCategory || !amount) {
       console.error("Missing Fields");
       return;
     } 
-    // Get token from browers so request can authenticate
-    const token = localStorage.getItem("token");
 
-    try {
-      const response = await fetch("http://localhost:3000/api/expenses", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          category: expenseName,
-          amount: Number(amount),
-          description: description,
-          date: date || new Date().toISOString().split("T")[0]
-        })
-      });
+    const response = await addExpense({
+      category: expenseCategory,
+      amount,
+      description,
+      date
+    });
 
       if(response.ok) {
-        setExpenseName("");
+        setExpenseCategory("");
         setAmount("");
         setDescription("");
         setDate("");
@@ -50,32 +35,19 @@ function Dashboard({ setIsLoggedIn }) {
         fetchExpenses();
       }
 
-    } catch (error) {
-      console.error("Error adding expense");
-    }
   };
 
   // Delete Expense
   const handleDelete = async (id) => {
-    const token = localStorage.getItem("token");
 
-    try {
-      const response = await fetch(`http://localhost:3000/api/expenses/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    const respons = await deleteExpense(id);
 
-      if (response.ok) {
-        fetchExpenses(); // Refresh List
-      } else {
-        console.error("Failed to delete");
-      }
-
-    } catch (error) {
-      console.error("Error deleting expense");
+    if (response.ok) {
+      fetchExpenses(); // Refresh List
+    } else {
+      console.error("Failed to delete");
     }
+
   };
 
   // Edit Expense
@@ -88,35 +60,21 @@ function Dashboard({ setIsLoggedIn }) {
   };
 
   // Update Expense
-  const handleUpdate = async (id) => {
-    const token = localStorage.getItem("token")
-
+  const handleUpdate = async (id, date) => {
+  
     const expense = expenses.find(e => e.id === id);
 
-    try {
-      const response = await fetch(`http://localhost:3000/api/expenses/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          category: expense.category,
-          amount: expense.amount,
-          amount: expense.amount,
-          description: expense.description,
-          date: expense.date
-        })
-      });
+    const response = await updateExpense(id, {
+      category: expenseCategory,
+      amount,
+      description,
+      date
+    });
 
       if (response.ok) {
         setEditingId(null);
         fetchExpenses();
       }
-
-    } catch (error) {
-      console.error("Update failed");
-    }
   };
 
   const total = expenses.reduce((sum, expense) => {
@@ -126,21 +84,8 @@ function Dashboard({ setIsLoggedIn }) {
   
   // Fetches Users Expenses 
   const fetchExpenses = async () => {
-    const token = localStorage.getItem("token");
-    
-      
-    try {
-      const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:3000/api/expenses", {
-        headers: {
-           Authorization: `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
-      console.log("FETCHED DATA:", data);
-
+    const respons = await fetchExpenses();
 
       if (response.ok) {        
         setExpenses(data);
@@ -153,10 +98,6 @@ function Dashboard({ setIsLoggedIn }) {
       } else {
         console.error(date.message);
       }
-
-    } catch (error) {
-      console.error("Error fetching expenses");
-    }
   };
 
   React.useEffect(() => {
@@ -169,8 +110,8 @@ function Dashboard({ setIsLoggedIn }) {
       <h2>Dashboard</h2>
 
       <input
-       value={expenseName}
-       onChange={(e) => setExpenseName(e.target.value)} 
+       value={expenseCategory}
+       onChange={(e) => setExpenseCategory(e.target.value)} 
        placeholder="Name" 
       />
       <input
