@@ -1,6 +1,6 @@
 # Full Stack Expense Tracker
 
-A full-stack expense tracking application built with React, Node.js, and SQLite.
+A full-stack expense tracking application built with React, Node.js, and PostgreSQL.
 
 ## Features
 
@@ -21,7 +21,7 @@ A full-stack expense tracking application built with React, Node.js, and SQLite.
 
 - Node.js
 - Express
-- SQLite
+- PostgreSQL
 - JWT Authentication
 
 ## Installation
@@ -47,7 +47,7 @@ npm run dev
 
 ## Status
 
-Currently improving UI and styling
+Currently developing to run on render
 
 ---
 
