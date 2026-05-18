@@ -1,23 +1,19 @@
-const db = require('../db');
-db.all(`SELECT * FROM expenses`, [], (err, rows) => {
-  console.log('ALL EXPENSES IN DB:', rows); // tester
-});
-db.serialize(() => {
+const pool = require("../db");
+
+const createTables = async () => {
   console.log("RUNNING MIGRATIONS...");
 
-  // USERS TABLE 
-  db.run(`
+  try {
+    await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       email TEXT UNIQUE,
-      password TEXT
-    )
-  `);
+      password TEXT )
+      `);
 
-
-  db.run(`
-    CREATE TABLE expenses (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS expenses (
+      id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL,
       amount REAL NOT NULL,
       category TEXT,
@@ -26,16 +22,13 @@ db.serialize(() => {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
-  `, (err) => {
-    if (err) {
-      console.error('Error creating expenses table:', err);
-    } else {
-      console.log('Expenses table ready');
-    }
-  });
+  `);
 
-  // Debug check
-  db.all(`PRAGMA table_info(expenses);`, [], (err, rows) => {
-    console.log("EXPENSES TABLE STRUCTURE:", rows);
-  });
-});
+    return console.log("Tables created");
+  } catch (err) {
+    console.log(err);
+    console.log({ error: "Failed to create database" });
+  }
+};
+
+createTables();

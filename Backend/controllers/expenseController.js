@@ -1,138 +1,139 @@
 const db = require("../db/db");
 
-const createExpense = (req, res) => {
-    console.log('REQ.USER:', req.user);
-    console.log('USER ID BEING USED:', req.user.userId);
-    const { amount, category, description, date } = req.body;
-    const userId =req.user.userId;
+const createExpense = async (req, res) => {
+  const { amount, category, description, date } = req.body;
+  const userId = req.user.userId;
 
-    if (!amount || !date) {
-        return res.status(400).json({ error: 'Amount and date are required' });
-    } 
+  if (!amount || !date) {
+    return res.status(400).json({ error: "Amount and date are required" });
+  }
 
-    const sql = `
+  const sql = `
     INSERT INTO expenses (user_id, amount, category, description, date)
-    VALUES (?, ?, ?, ?, ?)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id
     `;
 
-    console.log('SQL VALUES:', [req.user.userId, amount, category, description, date]);
+  try {
+    const result = await db.query(sql, [
+      userId,
+      amount,
+      category,
+      description,
+      date,
+    ]);
 
-    db.run(sql, [userId, amount, category, description, date], function (err) {
-        if (err) {
-            console.error('Error inserting expense:', err);
-            return res.status(500).json({ error: 'Failed to create expense' });
-        }
-
-        res.status(201).json({
-            id: this.lastID,
-            user_id: userId, 
-            amount,
-            category,
-            description,
-            date
-        });
+    res.status(201).json({
+      id: result.rows[0].id,
+      user_id: userId,
+      amount,
+      category,
+      description,
+      date,
     });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Failed to create expense" });
+  }
 };
 
+const getExpenses = async (req, res) => {
+  const userId = req.user.userId;
 
-const getExpenses = (req, res) => {
-    const userId = req.user.userId;
-
-    db.all(
-        "SELECT * FROM expenses WHERE user_id = ?",
-        [userId],
-        (err, rows) => {
-            if (err) {
-                return res.status(500).json({ message: "Database error" });
-            }
-
-            res.json(rows);
-        }
+  try {
+    const result = await db.query(
+      " SELECT * FROM expenses WHERE user_id = $1",
+      [userId],
     );
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Database error" });
+  }
 };
 
-
-
-const getExpenseById = (req, res) => {
+const getExpenseById = async (req, res) => {
   const userId = req.user.userId;
   const expenseId = req.params.id;
 
-  db.get(
-    `SELECT * FROM expenses WHERE id = ? AND user_id = ?`, 
-    [expenseId, userId],
-    (err, row) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Failed to fetch expense' });
-        }
-
-        if (!row) {
-            return res.status(404).json({ error: 'Expense not found' });
-        }
-
-        res.json(row);
-    }
-  );
+  try {
+    const result = await db.query(
+      " SELECT * FROM expenses WHERE id = $1 AND user_id = $2",
+      [expenseId, userId],
+    );
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Failed to fetch expense" });
+  }
 };
 
-const updateExpense = (req, res) => {
+const updateExpense = async (req, res) => {
   const userId = req.user.userId;
   const expenseId = req.params.id;
 
   const { amount, category, description, date } = req.body;
 
-  const sql = ` 
-  UPDATE expenses
-  SET amount = ?, category = ?, description = ?, date = ?
-  WHERE id = ? AND user_id = ? 
-  `;
+  const sql = `
+    UPDATE expenses
+    SET amount = $1, category = $2, description = $3,
+    date= $4 WHERE id = $5 AND user_id = $6
+    RETURNING *   
+    `;
 
-  db.run(
-    sql,
-    [amount, category, description, date, expenseId, userId],
-    function (err) {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Failed to update expense' });
-        }
+  try {
+    const result = await db.query(sql, [
+      amount,
+      category,
+      description,
+      date,
+      expenseId,
+      userId,
+    ]);
 
-        if (this.changes === 0) {
-            return res.status(404).json({ error: 'Expense not found or not authorised' });
-        }
-
-        res.json({ message: 'Expense updated successfully' });
+    if (result.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Expense not found or not authorised" });
     }
-  );
+
+    res.status(200).json({
+      message: "Expense updated successfully",
+      expense: result.rows[0],
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Failed to up date expense" });
+  }
 };
 
-
-const deleteExpense = (req, res) => {
+const deleteExpense = async (req, res) => {
   const userId = req.user.userId;
   const expenseId = req.params.id;
 
-  db.run(
-    `DELETE FROM expenses WHERE id = ? AND user_id = ?`,
-    [expenseId, userId], 
-    function (err) {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Failed to delete expense' });
-        }
+  try {
+    const result = await db.query(
+      "DELETE FROM expenses WHERE id = $1 AND user_id = $2",
+      [expenseId, userId],
+    );
 
-        if (this.changes === 0) {
-            return res.status(404).json({ error: 'Expense not found or not authorised' });
-        }
-
-        res.json({ message: 'Expense deleted successfully '});
+    if (result.rowCount === 0) {
+      return res
+        .status(404)
+        .json({ error: "Expense not found or not authorised" });
     }
-  );
+
+    res.status(200).json({ message: "Expense deleted successfully" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Expenses not deleted" });
+  }
 };
 
-
-module.exports = { 
-    getExpenses,
-    createExpense,
-    getExpenseById,
-    updateExpense,
-    deleteExpense,
- };
+module.exports = {
+  getExpenses,
+  createExpense,
+  getExpenseById,
+  updateExpense,
+  deleteExpense,
+};

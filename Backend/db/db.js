@@ -1,18 +1,7 @@
+const { Pool } = require("pg");
 
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-
-
-
-const dbPath = path.resolve(__dirname, 'expense_tracker.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Failed to connect to database', err);
-  } else {
-    console.log('Connected to SQLite database');
-  }
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
 });
 
-console.log('USING DB PATH:', dbPath);
-
-module.exports = db;
+module.exports = pool;
