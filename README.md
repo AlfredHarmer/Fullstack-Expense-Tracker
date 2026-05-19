@@ -24,6 +24,9 @@ A full-stack expense tracking application built with React, Node.js, and Postgre
 - PostgreSQL
 - JWT Authentication
 
+## Live URL
+https://fullstack-expense-tracker-1.onrender.com/
+
 ## Installation
 
 ### 1. Clone the repo
@@ -47,7 +50,7 @@ npm run dev
 
 ## Status
 
-Currently developing to run on render
+Improving UI
 
 ---
 
