@@ -86,7 +86,6 @@ function Dashboard({ setIsLoggedIn }) {
 
       if (response.ok) {        
         setExpenses(data);
-        console.log("STATE SET");
       } else if (response.status === 403) {
         console.error("Invalid token");
 
@@ -98,7 +97,6 @@ function Dashboard({ setIsLoggedIn }) {
   };
 
   React.useEffect(() => {
-    console.log("Calling fetchExpenses");
     handleFetchExpenses();
   }, []);
 

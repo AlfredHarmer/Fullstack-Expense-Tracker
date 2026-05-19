@@ -1,8 +1,6 @@
 const pool = require("../db");
 
 const createTables = async () => {
-  console.log("RUNNING MIGRATIONS...");
-
   try {
     await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
@@ -23,8 +21,6 @@ const createTables = async () => {
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
-
-    return console.log("Tables created");
   } catch (err) {
     console.log(err);
     console.log({ error: "Failed to create database" });

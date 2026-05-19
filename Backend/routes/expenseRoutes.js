@@ -1,4 +1,4 @@
-console.log('EXPENSE ROUTE WORKING')
+
 const express = require("express");
 const router = express.Router();
 
