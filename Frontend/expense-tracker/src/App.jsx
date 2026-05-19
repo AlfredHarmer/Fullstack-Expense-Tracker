@@ -15,7 +15,7 @@ function App() {
       return;
     }
 
-    fetch("http://localhost:3000/api/expenses", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/expenses`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

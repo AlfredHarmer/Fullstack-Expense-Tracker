@@ -36,8 +36,8 @@ function LoginForm({ setIsLoggedIn }) {
       try {
         const url = isSignup
 
-        ? "http://localhost:3000/api/auth/register"
-        : "http://localhost:3000/api/auth/login";
+        ? `${import.meta.env.VITE_API_URL}/api/auth/register`
+        : `${import.meta.env.VITE_API_URL}/api/auth/login`;
 
         const response = await fetch(url, {
           method: "POST",
@@ -95,7 +95,5 @@ function LoginForm({ setIsLoggedIn }) {
     </form>
   );
 }
-
-console.log("LOGIN FORM LOADED");
 
 export default LoginForm;

@@ -1,89 +1,94 @@
-
-const getToken = () => localStorage.getItem("token")
+const getToken = () => localStorage.getItem("token");
 
 export const fetchExpenses = async () => {
-    const token = getToken();
+  const token = getToken();
 
-    try {
-        const response = await fetch("http://localhost:3000/api/expenses", {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/expenses`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
-        return response;
-
-    } catch (error) {
-        console.error("Error fetching expenses");
-    }
+    return response;
+  } catch (error) {
+    console.error("Error fetching expenses");
+  }
 };
 
 export const addExpense = async (data) => {
-    const token = getToken();
+  const token = getToken();
 
-    try {
-        const response = await fetch("http://localhost:3000/api/expenses", {
-            method: "POST", 
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            }, 
-            body: JSON.stringify({
-                category: data.category,
-                amount: Number(data.amount),
-                description: data.description,
-                date: data.date || new Date().toISOString().split("T")[0]
-            })
-        });
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/expenses`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          category: data.category,
+          amount: Number(data.amount),
+          description: data.description,
+          date: data.date || new Date().toISOString().split("T")[0],
+        }),
+      },
+    );
 
-        return response;
-
-    } catch (error) {
-        console.error("Error adding expense");
-    }
+    return response;
+  } catch (error) {
+    console.error("Error adding expense");
+  }
 };
 
 export const deleteExpense = async (id) => {
-    const token = getToken();
+  const token = getToken();
 
-    try {
-        const response = await fetch(`http://localhost:3000/api/expenses/${id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/expenses/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
-        return response;
-
-    } catch (error) {
-        console.error("Error deleting expense");
-    }
+    return response;
+  } catch (error) {
+    console.error("Error deleting expense");
+  }
 };
-
 
 export const updateExpense = async (id, data) => {
-    const token = getToken();
+  const token = getToken();
 
-    try {
-        const response = await fetch(`http://localhost:3000/api/expenses/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json", 
-                Authorization: `Bearer ${token}`
-            }, 
-            body: JSON.stringify({
-                category: data.category, 
-                amount: data.amount,
-                description: data.description,
-                date: data.date
-            })
-        });
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/expenses/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          category: data.category,
+          amount: data.amount,
+          description: data.description,
+          date: data.date,
+        }),
+      },
+    );
 
-        return response;
-
-    } catch (error) {
-        console.log("Error Update Failed")
-    }
+    return response;
+  } catch (error) {
+    console.log("Error Update Failed");
+  }
 };
-
