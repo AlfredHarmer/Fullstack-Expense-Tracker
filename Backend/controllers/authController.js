@@ -33,7 +33,7 @@ const register = async (req, res) => {
       res.status(201).json({ message: "User created", token });
     } else {
       return res.status(400).json({ message: "User already exsists" });
-    }
+    } 
   } catch (err) {
     console.log(err);
     return res.status(500).json({ error: "Failed to create user " });

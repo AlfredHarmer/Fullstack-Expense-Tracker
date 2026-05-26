@@ -10,7 +10,7 @@ app.use(
     origin: process.env.CLIENT_URL,
   }),
 );
-app.use(express.json()); // to parse JSON bodies
+app.use(express.json()); // To parse JSON bodies
 
 const authRoutes = require("./routes/authRoutes");
 const expensesRoutes = require("./routes/expenseRoutes");
