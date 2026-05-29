@@ -1,5 +1,5 @@
 import React from "react";
-import { fetchExpenses, addExpense, deleteExpense, updateExpense } from "../services/expenseService";
+import { fetchExpenses, createExpense, deleteExpense, updateExpense } from "../services/expenseService";
 
 function Dashboard({ setIsLoggedIn }) {
   const [expenseCategory, setExpenseCategory] = React.useState("");
@@ -9,17 +9,36 @@ function Dashboard({ setIsLoggedIn }) {
   const [description, setDescription] =React.useState("");
   const [date, setDate] = React.useState("");
 
+  const [errors, setErrors] = React.useState({
+    category: "",
+    amount: ""
+  });
+
 
   // Add New Expense
-  const handleAddExpense = async () => {
+  const handleCreateExpense = async () => {
+
+    let newErrors = {
+      category: "",
+      amount: ""
+    };
 
     // Input Validation 
-    if (!expenseCategory || !amount) {
-      console.error("Missing Fields");
-      return;
-    } 
+    if (!expenseCategory) {
+      newErrors.category = "Expense Catergory Required";
+    };
 
-    const response = await addExpense({
+    if (!amount) {
+      newErrors.amount = "Expense Amount Required"
+    };
+
+    setErrors(newErrors);
+
+    if (newErrors.category || newErrors.amount) {
+      return;
+    };
+
+    const response = await createExpense({
       category: expenseCategory,
       amount,
       description,
@@ -119,16 +138,18 @@ function Dashboard({ setIsLoggedIn }) {
        onChange={(e) => setDescription(e.target.value)}
        placeholder="Description"
       />
-
       <input
        type="date"
        value={date}
        onChange={(e) => setDate(e.target.value)}
       />
 
-      <button onClick={handleAddExpense}>
+      <button onClick={handleCreateExpense}>
       Add
       </button>
+
+      <p>{errors.category}{errors.amount}</p>
+
 
       <ul>
         {Array.isArray(expenses) && expenses.map((expense) => (

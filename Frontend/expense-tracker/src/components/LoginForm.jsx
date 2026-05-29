@@ -22,6 +22,7 @@ function LoginForm({ setIsLoggedIn }) {
       password: "",
       confirmPassword: ""
     };
+    
     // Email and Password Validation
     if (email === "") newErrors.email = "Email required";
     if (password.length < 6) newErrors.password = "Min 6 characters";

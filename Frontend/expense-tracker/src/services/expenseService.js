@@ -19,7 +19,7 @@ export const fetchExpenses = async () => {
   }
 };
 
-export const addExpense = async (data) => {
+export const createExpense = async (data) => {
   const token = getToken();
 
   try {

@@ -5,7 +5,7 @@ const createExpense = async (req, res) => {
   const userId = req.user.userId;
 
   if (!amount || !category) {
-    return res.status(400).json({ error: "Categoryand amount are required" });
+    return res.status(400).json({ error: "Category and amount are required" });
   }
 
   const sql = `
