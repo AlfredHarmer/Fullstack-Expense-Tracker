@@ -1,4 +1,5 @@
 import React from "react";
+import { loginUser, registerUser } from "../services/loginService";
 
 function LoginForm({ setIsLoggedIn }) {
   const [email, setEmail] = React.useState("");
@@ -8,85 +9,111 @@ function LoginForm({ setIsLoggedIn }) {
   const [errors, setErrors] = React.useState({
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
   const [isSignup, setIsSignup] = React.useState(false);
   const [message, setMessage] = React.useState("");
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     let newErrors = {
       email: "",
       password: "",
-      confirmPassword: ""
     };
-    
+
     // Email and Password Validation
+    if (email === "") newErrors.email = "Email required";
+    if (password === "") newErrors.password = "Password required";
+
+    setErrors(newErrors);
+
+    if (!newErrors.email && !newErrors.password) {
+      const response = await loginUser({
+        email,
+        password,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("token", data.token);
+
+        setIsLoggedIn(true);
+      } else {
+        setMessage(data.message || "Login Failed");
+        return;
+      }
+    }
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+
+    let newErrors = {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    };
+
     if (email === "") newErrors.email = "Email required";
     if (password.length < 6) newErrors.password = "Min 6 characters";
 
-    if (isSignup && password !== confirmPassword) {
+    if (password !== confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
-    
+
     if (!newErrors.email && !newErrors.password && !newErrors.confirmPassword) {
-      try {
-        const url = isSignup
-
-        ? `${import.meta.env.VITE_API_URL}/api/auth/register`
-        : `${import.meta.env.VITE_API_URL}/api/auth/login`;
-
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email,
-          password
-        })
+      const response = await registerUser({
+        email,
+        password,
       });
-      
 
+      const data = await response.json();
 
-        if (response.ok) {
-          const data = await response.json();
-        
-          localStorage.setItem("token", data.token);
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
 
-          setIsLoggedIn(true);
-        } else {
-          setMessage(data.message || "Login failed");
-        }
-
-      } catch (error) {
-        setMessage("Server error");
+        setIsLoggedIn(true);
+      } else {
+        setMessage(data.message || "Sign Up Failed");
+        return;
       }
     }
   };
 
   return (
-    <form onSubmit={handleLogin}>
-      <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+    <form onSubmit={isSignup ? handleSignUp : handleLogin}>
+      <input
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+      />
       <p>{errors.email}</p>
 
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+      />
       <p>{errors.password}</p>
 
       {isSignup && (
         <>
-          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" />
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirm Password"
+          />
           <p>{errors.confirmPassword}</p>
         </>
       )}
 
-      <button type="submit">
-        {isSignup ? "Sign Up" : "Login"}
-      </button>
+      <button type="submit">{isSignup ? "Sign Up" : "Login"}</button>
 
       <button type="button" onClick={() => setIsSignup(!isSignup)}>
         Switch Mode
