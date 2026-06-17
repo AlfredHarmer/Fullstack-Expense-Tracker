@@ -1,6 +1,9 @@
+
+import type { ExpenseData } from "../types/expense";
+
 const getToken = () => localStorage.getItem("token");
 
-export const fetchExpenses = async () => {
+export const fetchExpenses = async (): Promise<Response | undefined> => {
   const token = getToken();
 
   try {
@@ -19,7 +22,7 @@ export const fetchExpenses = async () => {
   }
 };
 
-export const createExpense = async (data) => {
+export const createExpense = async (data: ExpenseData): Promise<Response | undefined> => {
   const token = getToken();
 
   try {
@@ -46,7 +49,7 @@ export const createExpense = async (data) => {
   }
 };
 
-export const deleteExpense = async (id) => {
+export const deleteExpense = async (id: number): Promise<Response | undefined> => {
   const token = getToken();
 
   try {
@@ -66,7 +69,7 @@ export const deleteExpense = async (id) => {
   }
 };
 
-export const updateExpense = async (id, data) => {
+export const updateExpense = async (id: number , data: ExpenseData): Promise<Response | undefined> => {
   const token = getToken();
 
   try {

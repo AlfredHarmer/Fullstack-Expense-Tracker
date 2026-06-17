@@ -1,11 +1,14 @@
 import React from "react";
 import { fetchExpenses, createExpense, deleteExpense, updateExpense } from "../services/expenseService";
+import type { Expense } from "../types/expense";
+import type { DashboardProps } from "../types/dashboardProps";
+import { preconnect } from "react-dom";
 
-function Dashboard({ setIsLoggedIn }) {
+function Dashboard({ setIsLoggedIn } : DashboardProps ) {
   const [expenseCategory, setExpenseCategory] = React.useState("");
   const [amount, setAmount] = React.useState("");
-  const [expenses, setExpenses] = React.useState([]);
-  const [editingId, setEditingId] = React.useState(null);
+  const [expenses, setExpenses] = React.useState<Expense[]>([]);
+  const [editingId, setEditingId] = React.useState<number | null>(null);
   const [description, setDescription] =React.useState("");
   const [date, setDate] = React.useState("");
 
@@ -25,7 +28,7 @@ function Dashboard({ setIsLoggedIn }) {
 
     // Input Validation 
     if (!expenseCategory) {
-      newErrors.category = "Expense Catergory Required";
+      newErrors.category = "Expense Category Required";
     };
 
     if (!amount) {
@@ -40,12 +43,12 @@ function Dashboard({ setIsLoggedIn }) {
 
     const response = await createExpense({
       category: expenseCategory,
-      amount,
+      amount: Number(amount),
       description,
       date
     });
 
-      if(response.ok) {
+      if(response?.ok) {
         setExpenseCategory("");
         setAmount("");
         setDescription("");
@@ -57,11 +60,11 @@ function Dashboard({ setIsLoggedIn }) {
   };
 
   // Delete Expense
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: number) => {
 
     const response = await deleteExpense(id);
 
-    if (response.ok) {
+    if (response?.ok) {
       handleFetchExpenses(); // Refresh List
     } else {
       console.error("Failed to delete");
@@ -70,22 +73,43 @@ function Dashboard({ setIsLoggedIn }) {
   };
 
   // Edit Expense
-  const handleEditChange = (id, field, value) => {
-    setExpenses(prev => 
-      prev.map(exp => 
-        exp.id === id ? { ...exp, [field]: value } : exp
-      )
-    );
-  };
+  const handleEditChange = (
+    id: number, 
+    field: 'category' | 'amount' | 'description' | 'date',
+    value: string,
+  ) => {
+    setExpenses((prev) =>
+    prev.map((expense) => {
+      if (expense.id !== id) {
+        return expense; 
+      }
 
+      if (field === 'amount') {
+        return {
+          ...expense,
+          amount: Number(value),
+        };
+      }
+
+      return {
+        ...expense,
+        [field]: value,
+      };
+    }),
+  );
+};
   // Update Expense
-  const handleUpdate = async (id, data) => {
+  const handleUpdate = async (id: number) => {
   
     const expense = expenses.find(e => e.id === id);
 
+    if (!expense) {
+      return
+    };
+
     const response = await updateExpense(id, expense);
 
-      if (response.ok) {
+      if (response?.ok) {
         setEditingId(null);
         handleFetchExpenses();
       }
@@ -101,18 +125,24 @@ function Dashboard({ setIsLoggedIn }) {
 
     const response = await fetchExpenses();
 
+    
+    if (!response) {
+      console.error("Failed to fetch expenses");
+      return;
+    };
+
     const data = await response.json();
 
-      if (response.ok) {        
-        setExpenses(data);
-      } else if (response.status === 403) {
-        console.error("Invalid token");
+    if (response.ok) {        
+      setExpenses(data);
+    } else if (response.status === 403) {
+      console.error("Invalid token");
 
-        localStorage.removeItem("token");
-        setIsLoggedIn(false);
-      } else {
-        console.error(date.message);
-      }
+      localStorage.removeItem("token");
+      setIsLoggedIn(false);
+    } else {
+      console.error("Failed to fecth expenses");
+    }
   };
 
   React.useEffect(() => {

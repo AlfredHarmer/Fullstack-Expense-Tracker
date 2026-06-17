@@ -5,7 +5,7 @@ import Dashboard from "./components/Dashboard.jsx";
 
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(null);
+  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean | null>(null);
 
   React.useEffect(() => {
     const token = localStorage.getItem("token");
