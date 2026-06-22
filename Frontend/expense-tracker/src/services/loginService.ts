@@ -1,4 +1,8 @@
-export const loginUser = async ({ email, password }) => {
+
+export const loginUser = async (
+  email: string,
+  password: string
+ ) => {
   try {
     
     const response = await fetch(
@@ -21,7 +25,10 @@ export const loginUser = async ({ email, password }) => {
   }
 };
 
-export const registerUser = async ({ email, password }) => {
+export const registerUser = async ( 
+  email: string,
+  password: string 
+) => {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_API_URL}/api/auth/register`,

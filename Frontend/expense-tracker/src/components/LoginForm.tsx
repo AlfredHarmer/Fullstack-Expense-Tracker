@@ -1,12 +1,14 @@
 import React from "react";
 import { loginUser, registerUser } from "../services/loginService";
+import type { LoginFormProps } from "../types/componentProps";
+import type { LoginErrors } from "../types/errors";
 
-function LoginForm({ setIsLoggedIn }) {
+function LoginForm({ setIsLoggedIn } : LoginFormProps) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
 
-  const [errors, setErrors] = React.useState({
+  const [errors, setErrors] = React.useState<LoginErrors>({
     email: "",
     password: "",
     confirmPassword: "",
@@ -15,10 +17,12 @@ function LoginForm({ setIsLoggedIn }) {
   const [isSignup, setIsSignup] = React.useState(false);
   const [message, setMessage] = React.useState("");
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (
+    e: React.SubmitEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
-    let newErrors = {
+    let newErrors: LoginErrors = {
       email: "",
       password: "",
     };
@@ -30,13 +34,21 @@ function LoginForm({ setIsLoggedIn }) {
     setErrors(newErrors);
 
     if (!newErrors.email && !newErrors.password) {
-      const response = await loginUser({
+
+    
+      const response = await loginUser(
         email,
         password,
-      });
+      );
+
+        if (!response) {
+        console.log("Login Request Failed");
+        return;
+      };
+
+      const data = await response.json();
 
       if (response.ok) {
-        const data = await response.json();
         localStorage.setItem("token", data.token);
 
         setIsLoggedIn(true);
@@ -47,7 +59,9 @@ function LoginForm({ setIsLoggedIn }) {
     }
   };
 
-  const handleSignUp = async (e) => {
+  const handleSignUp = async (
+    e: React.SubmitEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
     let newErrors = {
@@ -66,10 +80,15 @@ function LoginForm({ setIsLoggedIn }) {
     setErrors(newErrors);
 
     if (!newErrors.email && !newErrors.password && !newErrors.confirmPassword) {
-      const response = await registerUser({
+      const response = await registerUser(
         email,
         password,
-      });
+      );
+
+      if (!response) {
+        console.log("Sign Up Failed");
+        return;
+      };
 
       const data = await response.json();
 

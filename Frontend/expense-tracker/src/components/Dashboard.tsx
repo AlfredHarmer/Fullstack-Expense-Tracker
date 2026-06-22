@@ -1,8 +1,8 @@
-import React from "react";
+import React, { type ComponentProps } from "react";
 import { fetchExpenses, createExpense, deleteExpense, updateExpense } from "../services/expenseService";
 import type { Expense } from "../types/expense";
-import type { DashboardProps } from "../types/dashboardProps";
-import { preconnect } from "react-dom";
+import type { DashboardProps } from "../types/componentProps";
+
 
 function Dashboard({ setIsLoggedIn } : DashboardProps ) {
   const [expenseCategory, setExpenseCategory] = React.useState("");
