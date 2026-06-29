@@ -1,7 +1,7 @@
-require("dotenv").config();
-require("./db/migrations/init.js");
-const express = require("express");
-const cors = require("cors");
+import "dotenv/config";
+import "./db/migrations/init";
+import express from "express";
+import cors from "cors";
 
 const app = express();
 
@@ -12,11 +12,11 @@ app.use(
 );
 app.use(express.json()); // To parse JSON bodies
 
-const authRoutes = require("./routes/authRoutes");
-const expensesRoutes = require("./routes/expenseRoutes");
+import authRoutes from "./routes/authRoutes";
+import expenseRoutes from "./routes/expenseRoutes";
 
 app.use("/api/auth", authRoutes);
-app.use("/api", expensesRoutes);
+app.use("/api", expenseRoutes);
 
 app.get("/", (req, res) => {
   res.send("Expense Tracker Backend is running!");

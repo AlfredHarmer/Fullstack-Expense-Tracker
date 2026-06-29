@@ -1,8 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const db = require("../db/db");
 
-const register = async (req, res) => {
+import db from "../db/db";
+import type { Request, Response } from "express";
+
+export const register = async (
+  req: Request, 
+  res: Response
+) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -40,7 +45,10 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
+export const login = async (
+  req: Request,
+  res: Response
+) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -79,4 +87,4 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+

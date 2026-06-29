@@ -1,6 +1,16 @@
-const db = require("../db/db");
 
-const createExpense = async (req, res) => {
+import db from "../db/db";
+import type { Request, Response } from "express";
+
+export const createExpense = async (
+  req: Request, 
+  res: Response
+) => {
+  
+  if (!req.user) { 
+    return res.status(401).json({ message: "Unauthrised" });
+  };
+
   const { amount, category, description, date } = req.body;
   const userId = req.user.userId;
 
@@ -37,7 +47,15 @@ const createExpense = async (req, res) => {
   }
 };
 
-const getExpenses = async (req, res) => {
+export const getExpenses = async (
+  req: Request, 
+  res: Response
+) => {
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorised" });
+  };
+
   const userId = req.user.userId;
 
   try {
@@ -52,7 +70,15 @@ const getExpenses = async (req, res) => {
   }
 };
 
-const getExpenseById = async (req, res) => {
+export const getExpenseById = async (
+  req: Request, 
+  res: Response
+) => {
+   
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorised" });
+  };
+
   const userId = req.user.userId;
   const expenseId = req.params.id;
 
@@ -68,7 +94,15 @@ const getExpenseById = async (req, res) => {
   }
 };
 
-const updateExpense = async (req, res) => {
+export const updateExpense = async (
+  req: Request, 
+  res: Response
+) => {
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorised" });
+  };
+
   const userId = req.user.userId;
   const expenseId = req.params.id;
 
@@ -107,7 +141,15 @@ const updateExpense = async (req, res) => {
   }
 };
 
-const deleteExpense = async (req, res) => {
+export const deleteExpense = async (
+  req: Request, 
+  res: Response
+) => {
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorised" });
+  };
+
   const userId = req.user.userId;
   const expenseId = req.params.id;
 
@@ -130,10 +172,4 @@ const deleteExpense = async (req, res) => {
   }
 };
 
-module.exports = {
-  getExpenses,
-  createExpense,
-  getExpenseById,
-  updateExpense,
-  deleteExpense,
-};
+

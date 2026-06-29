@@ -1,4 +1,5 @@
-const pool = require("../db");
+
+import pool from "../db";
 
 const createTables = async () => {
   try {

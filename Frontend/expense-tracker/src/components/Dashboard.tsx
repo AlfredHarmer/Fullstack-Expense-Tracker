@@ -156,7 +156,7 @@ function Dashboard({ setIsLoggedIn } : DashboardProps ) {
       <input
        value={expenseCategory}
        onChange={(e) => setExpenseCategory(e.target.value)} 
-       placeholder="Name" 
+       placeholder="Category" 
       />
       <input
        value={amount}
