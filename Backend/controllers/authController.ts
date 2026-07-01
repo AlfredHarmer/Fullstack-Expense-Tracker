@@ -1,5 +1,6 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import db from "../db/db";
 import type { Request, Response } from "express";
@@ -31,9 +32,18 @@ export const register = async (
 
       const userId = insertUser.rows[0].id;
 
-      const token = jwt.sign({ userId: userId }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
+      const jwtSecret = process.env.JWT_SECRET;
+
+      if (!jwtSecret) {
+        throw new Error("JWT_SECRET is not defined");
+      };
+
+      const token = jwt.sign(
+        { userId },
+        jwtSecret,
+        { expiresIn: "1h" },
+      );
+ 
 
       res.status(201).json({ message: "User created", token });
     } else {
@@ -72,9 +82,18 @@ export const login = async (
 
     const userId = result.rows[0].id;
 
-    const token = jwt.sign({ userId: userId }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+        throw new Error("JWT_SECRET is not defined");
+      };
+
+      const token = jwt.sign(
+        { userId },
+        jwtSecret,
+        { expiresIn: "1h" },
+      );
+
 
     if (!passwordCompare) {
       res.status(404).json({ error: "Invalid credentials" });
